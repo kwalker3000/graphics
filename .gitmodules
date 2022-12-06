@@ -4,3 +4,6 @@
 [submodule "external/glew"]
 	path = external/glew
 	url = https://github.com/nigels-com/glew.git
+[submodule "external/glew2.0"]
+	path = external/glew2.0
+	url = https://github.com/Perlmint/glew-cmake.git
