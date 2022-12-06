@@ -3,13 +3,16 @@ cmake_minimum_required(VERSION 3.20.5)
 
 project(MyGraphics)
 
-add_executable(MyGraphics main.cpp)
-
+add_executable(MyGraphics src/main.cpp)
 
 add_subdirectory(external/glfw)
 
-target_include_directories(${PROJECT_NAME} PUBLIC external/glfw/include)
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
+include_directories(${GLUT_INCLUDE_DIRS} )
+
+target_include_directories(${PROJECT_NAME} PUBLIC external/glfw/include)
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL GLUT::GLUT)
 
 
