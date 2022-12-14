@@ -5,6 +5,31 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <signal.h>
+
+
+// macro
+// #define ASSERT(x) if (!(x)) raise(SIGTRAP);
+#define ASSERT(x) if (!(x)) raise(SIGTRAP);
+// backslashes to prevent newlines breaking macro
+#define GLCall(x) GLClearError();\
+    x;\
+    ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+
+// #x turns function passed into macro as string
+static void GLClearError()
+{
+    while (glGetError() != GL_NO_ERROR);
+}
+
+static bool GLLogCall(const char *function, const char *file, int line)
+{
+    while (GLenum error = glGetError()) {
+        std::cout << "[OpenGL Error] (" << error << "): " << function << " " << file << ":" << line << std::endl;
+        return false;
+    }
+    return true;
+}
 
 struct ShaderProgramSource {
     std::string VertexSource;
@@ -29,7 +54,7 @@ static ShaderProgramSource ParseShader(const std::string &filepath)
     // create a stack allocated array for 2 sstreams
     std::stringstream ss[2];
 
-    // current shaderType reading in
+    // current shadertype reading in
     ShaderType type = ShaderType::NONE;
 
     while (getline(stream, line)) {
@@ -143,8 +168,8 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, 6 * 2*sizeof(float), positions, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0);
+    glenablevertexattribarray(0);
+    glvertexattribpointer(0, 2, gl_FLOAT, GL_FALSE, sizeof(float)*2, 0);
 
 
     // index buffer ibo = index buffer object
@@ -167,7 +192,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // bounded to ibo buffer so don't need last argument
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        // GLClearError();
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        // ASSERT(GLLogCall());
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
